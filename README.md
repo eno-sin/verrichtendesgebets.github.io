@@ -18,7 +18,8 @@ Eine schlichte, moderne Web-App, die Schritt für Schritt zeigt, wie das Gebet v
 - **Audio**: jeder Player mit eigener Wiedergabegeschwindigkeit (bleibt gespeichert); für die Suren ein **Wort-für-Wort-Player** mit Wiederholung pro Wort
 - Zwei Designs: **Männer (Blau)** / **Frauen (Lila-Rosa)** – oben umschaltbar, Auswahl wird gespeichert
 - Installierbar als **Web-App (PWA)** – funktioniert auch offline
-- Bedienung auch per Tastatur (Pfeiltasten) oder Wischen
+- Bedienung auch per Tastatur (Pfeiltasten)
+- **Einstellungen**: Arabisch, Umschrift und Deutsch einzeln ein-/ausblendbar; erweiterte Audio-Optionen (Geschwindigkeit, Wiederholung) abschaltbar; „Alle auswählen / abwählen"
 
 ## Starten
 
