@@ -243,6 +243,24 @@ body.theme-women {
 .wbw-word.unavailable { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
 .wbw-hint { margin-top: 12px; font-size: 12px; color: #94a3b8; line-height: 1.5; }
 
+/* ---------- Einstellungen ---------- */
+.settings-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(15, 23, 42, .45); display: flex; align-items: flex-end; justify-content: center; animation: fadein .2s ease; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.settings-panel { width: 100%; max-width: 560px; max-height: 86vh; overflow-y: auto; background: #fff; border-radius: 24px 24px 0 0; padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(15, 23, 42, .2); animation: slideup .25s ease; }
+@keyframes slideup { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.settings-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.settings-head h2 { font-size: 19px; }
+.settings-group { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin: 16px 0 4px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid #eef2f7; cursor: pointer; }
+.setting-row > span:first-child { font-size: 15px; font-weight: 600; color: #1e293b; line-height: 1.35; }
+.setting-sub { display: block; font-size: 12px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+.setting-row input { display: none; }
+.switch { width: 48px; height: 27px; border-radius: 999px; background: #e2e8f0; position: relative; flex: 0 0 auto; transition: background .2s ease; }
+.switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .2); transition: left .2s ease; }
+.setting-row input:checked + .switch { background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
+.setting-row input:checked + .switch::after { left: 24px; }
+.settings-all { width: 100%; margin-top: 18px; }
+
 /* ---------- Ende-Karte ---------- */
 .end-card {
   text-align: center; background: #fff; border-radius: 24px;
