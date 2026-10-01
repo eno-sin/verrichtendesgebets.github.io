@@ -1,5 +1,5 @@
 /* Service Worker – Offline-Cache für die Gebets-App */
-const CACHE = 'mein-gebet-v4';
+const CACHE = 'mein-gebet-v5';
 const SHELL = [
   './',
   './index.html',
@@ -42,21 +42,37 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
 
+  // Code-/App-Dateien: Netzwerk zuerst (damit Änderungen sofort sichtbar sind), offline → Cache
+  const isShell = e.request.mode === 'navigate' ||
+    /\.(html|css|js|json|webmanifest)$/.test(url.pathname) ||
+    url.pathname === '/' || url.pathname === './';
+
+  if (isShell) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+        }
+        return res;
+      }).catch(() =>
+        caches.match(e.request, { ignoreSearch: true }).then(hit => hit || caches.match('./index.html'))
+      )
+    );
+    return;
+  }
+
+  // Medien (Audios, Bilder): Cache zuerst, sonst Netzwerk
   e.respondWith(
     caches.match(e.request, { ignoreSearch: true }).then(hit => {
       if (hit) return hit;
       return fetch(e.request).then(res => {
-        // Nur vollständige Antworten cachen (keine Range-/Teilantworten)
         if (res.ok && !e.request.headers.has('range')) {
           const copy = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, copy));
         }
         return res;
-      }).catch(() => {
-        // Offline: Navigation → App-Shell, sonst Fehler
-        if (e.request.mode === 'navigate') return caches.match('./index.html');
-        return new Response('', { status: 503, statusText: 'offline' });
-      });
+      }).catch(() => new Response('', { status: 503, statusText: 'offline' }));
     })
   );
 });
