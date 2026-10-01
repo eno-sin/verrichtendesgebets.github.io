@@ -87,6 +87,7 @@ function renderHome() {
   app.innerHTML =
     '<header class="topbar">' +
       '<div class="brand"><span class="logo">🕌</span> Mein Gebet</div>' +
+      '<button class="icon-btn" id="btn-settings" aria-label="Einstellungen">⚙️</button>' +
       themeToggleHtml() +
     '</header>' +
     '<main class="wrap">' +
@@ -111,6 +112,7 @@ function renderHome() {
     b.addEventListener('click', () => openPrayer(b.dataset.id));
   });
   bindThemeToggle();
+  document.getElementById('btn-settings').addEventListener('click', openSettings);
   const inst = document.getElementById('btn-install');
   if (inst) inst.addEventListener('click', () => {
     if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; render(); }
@@ -199,9 +201,9 @@ function groupHtml(g) {
       '<h2>' + s.title + '</h2>' +
       (s.intro || s.introWomen ? '<p class="intro">' + introOf(s) + '</p>' : '') +
       (s.say ? '<div class="say">💭 ' + s.say + '</div>' : '') +
-      (s.arabic ? '<div class="arabic" dir="rtl" lang="ar">' + lines(s.arabic) + '</div>' : '') +
-      (s.translit ? '<p class="translit">' + lines(s.translit) + '</p>' : '') +
-      (s.translation ? '<p class="translation">' + lines(s.translation) + '</p>' : '') +
+      (s.arabic && showBool('gb-show-arabic') ? '<div class="arabic" dir="rtl" lang="ar">' + lines(s.arabic) + '</div>' : '') +
+      (s.translit && showBool('gb-show-translit') ? '<p class="translit">' + lines(s.translit) + '</p>' : '') +
+      (s.translation && showBool('gb-show-german') ? '<p class="translation">' + lines(s.translation) + '</p>' : '') +
       chipsOf(s) +
     '</section>' +
     ((s.arabic || s.translit)
@@ -246,7 +248,7 @@ function fullAudioHtml(label, file) {
   return '<div class="audio-real" data-file="' + file + '">' +
     (label ? '<div class="audio-label">' + label + '</div>' : '') +
     '<button type="button" class="phrase-play">▶ Anhören</button>' +
-    speedBarHtml(key, speed) +
+    (showBool('gb-show-advanced-audio') ? speedBarHtml(key, speed) : '') +
     '</div>';
 }
 
@@ -313,15 +315,17 @@ function wbwPlayerHtml(key) {
 
   return '<div class="wbw" data-key="' + key + '">' +
     (w.bismillah ? '<div class="wbw-bismillah" dir="rtl" lang="ar">بِسْمِ اللهِ الرَّحْمَٰنِ الرَّحِيمِ</div>' : '') +
-    '<div class="wbw-controls">' +
-      speedBarHtml(speedKey, speed) +
-      '<div class="repeat-bar">' +
-        '<span class="speed-label">Wiederholung pro Wort</span>' +
-        [1, 2, 3].map(r =>
-          '<button type="button" class="repeat-btn' + (r === repeat ? ' active' : '') + '" data-repeat="' + r + '">' + r + '×</button>'
-        ).join('') +
-      '</div>' +
-    '</div>' +
+    (showBool('gb-show-advanced-audio')
+      ? '<div class="wbw-controls">' +
+          speedBarHtml(speedKey, speed) +
+          '<div class="repeat-bar">' +
+            '<span class="speed-label">Wiederholung pro Wort</span>' +
+            [1, 2, 3].map(r =>
+              '<button type="button" class="repeat-btn' + (r === repeat ? ' active' : '') + '" data-repeat="' + r + '">' + r + '×</button>'
+            ).join('') +
+          '</div>' +
+        '</div>'
+      : '') +
     '<div class="wbw-ayahs">' + ayahs + '</div>' +
     '<div class="wbw-hint">Tippe ein Wort an, um es einzeln zu hören.</div>' +
     '</div>';
@@ -469,23 +473,91 @@ function bindThemeToggle() {
   });
 }
 
-/* ---------- Tastatur & Wischen ---------- */
+/* ---------- Einstellungen ---------- */
+function showBool(key) { return localStorage.getItem(key) !== '0'; }
+function setShow(key, val) { localStorage.setItem(key, val ? '1' : '0'); }
+
+const SETTING_KEYS = ['gb-show-arabic', 'gb-show-translit', 'gb-show-german', 'gb-show-advanced-audio'];
+
+function allSettingsOn() {
+  return SETTING_KEYS.every(k => showBool(k));
+}
+
+function settingsHtml() {
+  const textRows = [
+    { key: 'gb-show-arabic', label: 'Arabischer Text' },
+    { key: 'gb-show-translit', label: 'Umschrift (Umlautschrift)' },
+    { key: 'gb-show-german', label: 'Deutsche Übersetzung' }
+  ].map(it =>
+    '<label class="setting-row">' +
+      '<span>' + it.label + '</span>' +
+      '<input type="checkbox" class="setting-check" data-key="' + it.key + '"' + (showBool(it.key) ? ' checked' : '') + '>' +
+      '<span class="switch"></span>' +
+    '</label>'
+  ).join('');
+
+  return '<div class="settings-backdrop" id="settings-backdrop">' +
+    '<div class="settings-panel">' +
+      '<div class="settings-head">' +
+        '<h2>Einstellungen</h2>' +
+        '<button class="icon-btn" id="settings-close" aria-label="Schließen">✕</button>' +
+      '</div>' +
+      '<div class="settings-group">Anzeige</div>' +
+      textRows +
+      '<div class="settings-group">Audio</div>' +
+      '<label class="setting-row">' +
+        '<span>Erweiterte Audio-Optionen<span class="setting-sub">Geschwindigkeit & Wiederholung pro Wort</span></span>' +
+        '<input type="checkbox" class="setting-check" data-key="gb-show-advanced-audio"' + (showBool('gb-show-advanced-audio') ? ' checked' : '') + '>' +
+        '<span class="switch"></span>' +
+      '</label>' +
+      '<button class="btn btn-ghost settings-all" id="settings-all">' + (allSettingsOn() ? 'Alle abwählen' : 'Alle auswählen') + '</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function openSettings() {
+  closeSettings();
+  const overlay = document.createElement('div');
+  overlay.id = 'settings-overlay';
+  overlay.innerHTML = settingsHtml();
+  document.body.appendChild(overlay);
+
+  document.getElementById('settings-close').addEventListener('click', closeSettings);
+  document.getElementById('settings-backdrop').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeSettings();
+  });
+  document.querySelectorAll('#settings-overlay .setting-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      setShow(cb.dataset.key, cb.checked);
+      render();
+      const all = document.getElementById('settings-all');
+      if (all) all.textContent = allSettingsOn() ? 'Alle abwählen' : 'Alle auswählen';
+    });
+  });
+  document.getElementById('settings-all').addEventListener('click', () => {
+    const target = !allSettingsOn();
+    SETTING_KEYS.forEach(k => setShow(k, target));
+    render();
+    openSettings();
+  });
+}
+
+function closeSettings() {
+  const o = document.getElementById('settings-overlay');
+  if (o) o.remove();
+}
+
+/* ---------- Tastatur ---------- */
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('settings-overlay')) { closeSettings(); return; }
+    if (state.view === 'prayer') goHome();
+    return;
+  }
   if (state.view !== 'prayer') return;
   if (e.key === 'ArrowRight') nextStep();
   if (e.key === 'ArrowLeft') prevStep();
-  if (e.key === 'Escape') goHome();
 });
-
-let touchX = null;
-document.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
-document.addEventListener('touchend', e => {
-  if (state.view !== 'prayer' || touchX === null) return;
-  const dx = e.changedTouches[0].clientX - touchX;
-  if (dx < -45) nextStep();
-  if (dx > 45) prevStep();
-  touchX = null;
-}, { passive: true });
 
 /* ---------- PWA ---------- */
 window.addEventListener('beforeinstallprompt', e => {
