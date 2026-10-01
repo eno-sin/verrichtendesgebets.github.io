@@ -1,0 +1,23 @@
+In diesen Ordner kommen die Audiodateien (MP3).
+
+Struktur:
+  audio/          →  vollständige Phrasen (ein MP3 pro Text)
+  audio/wbw/      →  Wort-für-Wort-Audios, benannt nach Sure_Vers_Wort
+                     (z. B. 001_001_001.mp3 = Sure 1, Vers 1, Wort 1)
+
+Eingebunden:
+  SubhanakaAllahuWabihamdik.mp3 → Lobpreis (Subhānaka)
+  Ruku.mp3                      → Verbeugung (Rukūʿ)
+  SamiAllahuLimanHamida.mp3     → Aufrichten (Samiʿallāhu…)
+  RabbanaWalakalHamd.mp3        → Aufrichten (Rabbanā wa laka-l-hamd)
+  Sujud.mp3                     → Niederwerfung (Sudschūd)
+  Taschhadud.mp3                → Taschahhud
+  SalawatTaschahadud.mp3        → Segenswünsche (Salawāt)
+  wbw/                          → Wort für Wort: Al-Fātiha (001), Al-Kauthar (108), Al-Ikhlās (112)
+
+Geschwindigkeit:
+  Jeder Player hat eine eigene Geschwindigkeit (0,5×–1,5×), die pro Audio
+  gespeichert wird. Beim Wort-für-Wort-Player zusätzlich:
+  „Wiederholung pro Wort" (1×–3×).
+
+Die Zuordnung der Dateien steht in js/data.js (audio / audios / wbw).

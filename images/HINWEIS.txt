@@ -1,0 +1,24 @@
+In diesen Ordner kommen die Bilder (z. B. Fotos oder Grafiken der Gebetshaltungen).
+Es gibt zwei Darstellungen: Männer (Blau) und Frauen (Lila-Rosa).
+
+Struktur:
+  images/woman/  →  Bilder für die Frauen-Darstellung (siehe js/data.js)
+  images/men/    →  Bilder für die Männer-Darstellung (folgt noch)
+
+Eingebunden (Frauen, Ordner images/woman/):
+  nurstehenqiyam.png       →  Stehen, Arme seitlich (Niyya, Aufrichten, Aufstehen)
+  qiyamhaenderaufbrust.png →  Stehen, Hände auf der Brust (Suren)
+  openingTakbir.png        →  Eröffnungs-Takbīr (Hände oben)
+  ruku.png                 →  Verbeugung (Rukūʿ)
+  sujud.png                →  Niederwerfung (Sudschūd)
+  jalasa.png               →  Sitzen zwischen den Niederwerfungen (Dschalsa)
+  Taschahhud.png           →  Sitzen beim Taschahhud (At-Tahiyyāt, Salawāt, Duʿāʾ)
+  TaslimRight.png          →  Gruß nach rechts (Salām)
+  TaslimLeft.png           →  Gruß nach links (Salām)
+
+Noch offen (Platzhalter-Figur wird angezeigt):
+  Männer: alle Haltungen
+
+Bilder einfach in den passenden Ordner legen und in js/data.js eintragen –
+unter POSE_IMAGES_WOMEN / POSE_IMAGES_MEN oder pro Schritt (imageWomen / imageMen).
+Danach einmal gen-media-list.ps1 ausführen (aktualisiert auch den Offline-Cache).
